@@ -26,10 +26,10 @@ class MySqlUserRepository : UserRepository{
     }
 
     override fun getAllTransactionForUser(id: Int): List<Audit> {
-        return database.getAllTransactionForUser(id)
+        return database.getAllTransactionForUser(id).map { Audit(it.userid1,it.userid2,it.amount) }
     }
 
     override fun getAllTransactionForGroup(id: Int): List<Audit> {
-        return database.getAllTransactionForGroup(id)
+        return database.getAllTransactionForGroup(id).map { Audit(it.userid1,it.userid2,it.amount) }
     }
 }

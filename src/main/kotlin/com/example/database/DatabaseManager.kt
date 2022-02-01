@@ -1,9 +1,6 @@
 package com.example.database
 
-import com.example.entities.AuditDraft
-import com.example.entities.GroupDraft
-import com.example.entities.User
-import com.example.entities.UserDraft
+import com.example.entities.*
 import org.ktorm.database.Database
 import org.ktorm.dsl.*
 import org.ktorm.entity.*
@@ -94,13 +91,38 @@ class DatabaseManager {
         return true
     }
 
-    fun addGroup(groupDraft: GroupDraft){
-
+    fun addGroup(groupDraft: GroupDraft): Boolean{
+        val groupid = ktormDatabase.insertAndGenerateKey(DBGroupTable){
+            set(DBGroupTable.name,groupDraft.name)
+        } as Int
+        return true
     }
-    fun getAllTransactionForUser(id: Int){
 
+    fun getAllTransactionForUser(id: Int): List<DBAuditEntity>{
+        return ktormDatabase.sequenceOf(DBAuditTable)
+            .filter {
+                (it.userid1 eq id) or (it.userid2 eq id)
+            }
+            .toList()
     }
-    fun getAllTransactionForGroup(id: Int){
 
+    fun getAllTransactionForGroup(id: Int): List<DBAuditEntity>{
+        val users = ktormDatabase.sequenceOf(DBGroupUserTable)
+            .filter {
+                it.groupid eq id
+            }
+
+        val auditList = mutableListOf<DBAuditEntity>()
+        for(user in users){
+            auditList.addAll(
+            ktormDatabase.sequenceOf(DBAuditTable)
+                .filter {
+                    (it.userid1 eq user.id) or (it.userid2 eq user.id)
+                }
+                .toList()
+            )
+        }
+
+        return auditList
     }
 }
