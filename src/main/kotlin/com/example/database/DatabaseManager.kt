@@ -83,7 +83,7 @@ class DatabaseManager {
                 val newamount = oldamount.plus(equalamount)
 
                 set(it.amount, newamount)
-                where { (it.userid2 eq auditDraft.userid) and (it.userid1 eq user.id)}
+                where { (it.userid2 eq auditDraft.userid) and (it.userid1 eq user.userid)}
             }
         }
 
