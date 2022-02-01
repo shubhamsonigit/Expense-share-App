@@ -83,8 +83,7 @@ class DatabaseManager {
                 val newamount = oldamount.plus(equalamount)
 
                 set(it.amount, newamount)
-                where { it.userid2 eq auditDraft.userid}
-                where { it.userid1 eq user.id}
+                where { (it.userid2 eq auditDraft.userid) and (it.userid1 eq user.id)}
             }
         }
 
@@ -101,7 +100,7 @@ class DatabaseManager {
     fun getAllTransactionForUser(id: Int): List<DBAuditEntity>{
         return ktormDatabase.sequenceOf(DBAuditTable)
             .filter {
-                (it.userid1 eq id) or (it.userid2 eq id)
+                ((it.userid1 eq id) or (it.userid2 eq id)) and (it.amount greater 0.0)
             }
             .toList()
     }
@@ -117,7 +116,7 @@ class DatabaseManager {
             auditList.addAll(
             ktormDatabase.sequenceOf(DBAuditTable)
                 .filter {
-                    (it.userid1 eq user.id) or (it.userid2 eq user.id)
+                    ((it.userid1 eq user.id) or (it.userid2 eq user.id)) and (it.amount greater 0.0)
                 }
                 .toList()
             )
